@@ -1,3 +1,4 @@
+import mysql.connector
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -5,21 +6,36 @@ mydb = mysql.connector.connect(
   password="Eilif180917",
   database="Project"
 )
-
+#Functional
 def create_user(id,userName, email):
     mycursor = mydb.cursor()
     sql = "INSERT INTO User(UserID,UserName, UserEmail) VALUES (%s, %s, %s)"
     val = (id,userName,email)
     mycursor.execute(sql,val)
-
     mydb.commit()
+    print("Registered", userName)
+#Functional
 def show_users():
     mycursor = mydb.cursor()
-    mycursor.execute("SELECT * FROM User    ")
+    mycursor.execute("SELECT * FROM User ")
     userList = mycursor.fetchall()
     for user in userList:
         print(user)
-# create_user("user1","email@email.com")
-show_users()
+def login():
+    print("Login")
+    email = input("Email: ")
+    mycursor = mydb.cursor()
+    sql = "SELECT EXISTS(SELECT * FROM Login WHERE UserEmail = %s);"
+    #This query doesnt seem to work
+    userEmail = (email,)
+    registered = mycursor.execute(sql,email)
 
-
+    print(registered)
+#Functional
+def create_login(email):
+    passwrd = input("Provide a password: ")
+    mycursor = mydb.cursor()
+    sql = "INSERT INTO Login(UserEmail, Password) VALUES (%s, %s)"
+    val = (email,passwrd)
+    mycursor.execute(sql, val)
+    mydb.commit()
