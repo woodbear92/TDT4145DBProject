@@ -29,13 +29,17 @@ def show_users():
     for user in userList:
         print(user)
 
-
+#Functional, solves usecase 1?
 def login():
-    check_email=0
+    valid_email=0
+    valid_password=0
     print("Login")
-    while not(check_email):
+    while not(valid_email):
         email = input("Email: ")
-        check_email = check_email_login(email)
+        valid_email = check_email_login(email)
+    while not (valid_password):
+        password = input("Password: ")
+        valid_password = check_password(email,password)
 
 
 
@@ -60,5 +64,17 @@ def check_email_login(email):
         return 1;
     else:
         print('Email does not exist! Try again')
+    return 0
+def check_password(email,password):
+    mycursor = mydb.cursor()
+    sql = 'SELECT useremail FROM login WHERE useremail = %s AND Password = %s'
+    val = (email,password)
+    mycursor.execute(sql, val)
+    checkUserPassword = mycursor.fetchone()
+    if checkUserPassword is not None:
+        print('Password is valid')
+        return 1
+    else:
+        print('Password is not valid! Try again')
     return 0
 login()
