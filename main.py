@@ -1,4 +1,5 @@
 import mysql.connector
+import uuid
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -7,8 +8,10 @@ mydb = mysql.connector.connect(
   database="Project"
 )
 #Functional
-def create_user(id,userName, email):
+def create_user(userName, email):
     mycursor = mydb.cursor()
+    generatedKey = uuid.uuid1()
+    id = generatedKey.bytes
     sql = "INSERT INTO User(UserID,UserName, UserEmail) VALUES (%s, %s, %s)"
     val = (id,userName,email)
     mycursor.execute(sql,val)
@@ -26,7 +29,7 @@ def login():
     email = input("Email: ")
     mycursor = mydb.cursor()
     sql = "SELECT EXISTS(SELECT * FROM Login WHERE UserEmail = %s);"
-    #This query doesnt seem to work
+    #This query doesnt seem to work.
     userEmail = (email,)
     registered = mycursor.execute(sql,email)
 
@@ -39,3 +42,4 @@ def create_login(email):
     val = (email,passwrd)
     mycursor.execute(sql, val)
     mydb.commit()
+login()
