@@ -4,7 +4,7 @@ import uuid
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="Eilif180917",
+    password="june92000",
     database="Project"
 )
 
@@ -98,6 +98,31 @@ def check_password(email,password):
     else:
         print('Password is not valid! Try again')
     return 0
+
+def get_user_PCID(userID):
+    cur = mydb.cursor(dictionary=True)
+    cur.execute("SELECT * From student, instructor, user WHERE (user.UserID=student.StudentID or user.UserID = instructor.InstructorID) AND user.UserName = %s", (userID,))
+    userinfo=cur.fetchone()
+    return(userinfo["PCID"])
+
+
+
+def create_thread(postID, color, StudentReplyID, InstructorReplyID):
+    mycursor = mydb.cursor()
+    sql = "INSERT INTO thread(ThreadID, ThreadColor, StudentReplyID, InstructorReplyID) VALUES (%s, %s,%s, %s)"
+    val = (postID, color, StudentReplyID, InstructorReplyID)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def create_tag(ThreadID,tag)
+    mycursor = mydb.cursor()
+    sql = "INSERT INTO tags(ThreadID, Tag) VALUES (%s, %s)"
+    val = (ThreadID,tag)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+
+
 def create_post(UserId):
     print("Thread: 1")
     print("Repy: 2")
@@ -112,10 +137,47 @@ def create_post(UserId):
         post_type = "DiscussionPost"
     else:
         return
+
     post_content = input("Content: ")
     folder = input("Folder: ")
     tag = input("Tag: ")
-create_user("Nick Fury", "FuryNicholasJ@gmail.com",1)
+    PCID=get_user_PCID(userID)
+    generatedKey = uuid.uuid4()
+    postID = generatedKey.bytes
+    
+    #create post
+    mycursor = mydb.cursor()
+    sql = "INSERT INTO POST(PostID, PostContent, PCID, PostType) VALUES (%s, %s,%s, %s)"
+    val = (postID, post_content,PCID, post_type)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+    create_thread(postID,0, Null, Null)
+    create_tag(postID,tag)
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+#create_user("bee", "barry@gmail.com",0)
 
 
 
