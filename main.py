@@ -5,7 +5,8 @@ mydb = mysql.connector.connect(
     host="localhost",
     user="root",
     password="Eilif180917",
-    database="Project"
+    database="Project",
+    raw=True
 )
 
 
@@ -98,7 +99,7 @@ def check_password(email,password):
     else:
         print('Password is not valid! Try again')
     return 0
-def create_post(UserId):
+def create_post(email):
     print("Thread: 1")
     print("Repy: 2")
     print("Discussion Post: 3")
@@ -110,12 +111,20 @@ def create_post(UserId):
         post_type = "Reply"
     elif post_selection == 3:
         post_type = "DiscussionPost"
-    else:
-        return
     post_content = input("Content: ")
     folder = input("Folder: ")
     tag = input("Tag: ")
-create_user("Nick Fury", "FuryNicholasJ@gmail.com",1)
+    id = get_Id(email)
+    
+
+def get_Id(email):
+    mycursor = mydb.cursor()
+    sql = "SELECT UserId FROM User WHERE UserEmail = %s"
+    UserEmail = (email,)
+    mycursor.execute(sql, UserEmail)
+    UserId = mycursor.fetchone()
+    return UserId
+create_post("FuryNicholasJ@gmail.com")
 
 
 
