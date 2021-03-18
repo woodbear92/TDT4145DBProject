@@ -114,7 +114,7 @@ def create_thread(postID, color, StudentReplyID, InstructorReplyID):
     mycursor.execute(sql, val)
     mydb.commit()
 
-def create_tag(ThreadID,tag)
+def create_tag(ThreadID, tag):
     mycursor = mydb.cursor()
     sql = "INSERT INTO tags(ThreadID, Tag) VALUES (%s, %s)"
     val = (ThreadID,tag)
@@ -153,7 +153,7 @@ def create_post(UserId):
     mydb.commit()
 
     create_thread(postID,0, Null, Null)
-    create_tag(postID,tag)
+    create_tag(postID, tag)
 
 
     
