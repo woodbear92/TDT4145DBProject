@@ -76,7 +76,7 @@ def show_pcid():
     mycursor.execute("SELECT * FROM User ")
     userList = mycursor.fetchall()
     for user in userList:
-        print(get_user_PCID(user[0]),user[2])
+        print(get_PCID(user[0]),user[2])
 
 def show_student():
     mycursor = mydb.cursor(dictionary=True)
@@ -144,12 +144,9 @@ def check_password(email,password):
         print('Password is not valid! Try again')
     return 0
 
-def get_user_PCID(userID):
-    cur = mydb.cursor(buffered=(True),dictionary=True)
-    cur.execute("SELECT * From student, instructor, user WHERE (user.UserID=student.StudentID or user.UserID = instructor.InstructorID) AND user.UserID = %s", (userID,))
-    userinfo=cur.fetchone()
-    pcid=userinfo["PCID"]
-    return(pcid)
+
+
+
 
 
 def get_pcid(UserID):
