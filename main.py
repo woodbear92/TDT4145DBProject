@@ -12,7 +12,7 @@ import uuid
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="june92000",
+    password="",
     database="Project2"
 )
 
