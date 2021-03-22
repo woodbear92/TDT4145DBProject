@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Mar 22 14:52:29 2021
+
+@author: Test
+"""
+
+
 import mysql.connector
 import uuid
 
@@ -5,9 +13,18 @@ mydb = mysql.connector.connect(
     host="localhost",
     user="root",
     password="june92000",
-    database="Project"
+    database="Project2"
 )
 
+#creates userID for testing
+def uID(email):
+    mycursor = mydb.cursor()
+    sql = 'SELECT userID FROM user WHERE useremail = %s'
+    val=(email,)
+    mycursor.execute(sql,val)
+    testID = (mycursor.fetchone())[0]
+    return(testID)
+    
 
 # Functional
 def create_user(userName, email, Instructor):
@@ -16,6 +33,7 @@ def create_user(userName, email, Instructor):
     id = generatedKey.bytes
     generatedKey = uuid.uuid4()
     PCID = generatedKey.bytes
+   # (print(PCID))
     sql = "INSERT INTO User(UserID,UserName, UserEmail) VALUES (%s, %s, %s)"
     val = (id, userName, email)
     mycursor.execute(sql, val)
@@ -43,11 +61,38 @@ def create_user(userName, email, Instructor):
 
 # Functional
 def show_users():
+
     mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM User ")
     userList = mycursor.fetchall()
     for user in userList:
         print(user)
+
+
+
+##########for testing
+def show_pcid():
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM User ")
+    userList = mycursor.fetchall()
+    for user in userList:
+        print(get_user_PCID(user[0]),user[2])
+
+def show_student():
+    mycursor = mydb.cursor(dictionary=True)
+    mycursor.execute("SELECT PCID FROM Student ")
+    userList = mycursor.fetchall()
+    for user in userList:
+        print(user)
+        
+def show_instructor():
+    mycursor = mydb.cursor(dictionary=True)
+    mycursor.execute("SELECT PCID FROM instructor ")
+    userList = mycursor.fetchall()
+    for user in userList:
+        print(user)
+ ##############       
+
 
 #Functional, solves use case 1?
 def login():
@@ -100,10 +145,57 @@ def check_password(email,password):
     return 0
 
 def get_user_PCID(userID):
-    cur = mydb.cursor(dictionary=True)
-    cur.execute("SELECT * From student, instructor, user WHERE (user.UserID=student.StudentID or user.UserID = instructor.InstructorID) AND user.UserName = %s", (userID,))
+    cur = mydb.cursor(buffered=(True),dictionary=True)
+    cur.execute("SELECT * From student, instructor, user WHERE (user.UserID=student.StudentID or user.UserID = instructor.InstructorID) AND user.UserID = %s", (userID,))
     userinfo=cur.fetchone()
-    return(userinfo["PCID"])
+    pcid=userinfo["PCID"]
+    return(pcid)
+
+
+def get_pcid(UserID):
+    if(check_student(UserID)):
+        return((get_stud_PCID(UserID)))
+    else:
+        return((get_in_PCID(UserID)))
+        
+        
+   
+
+def check_student(userID):
+    
+    mycursor = mydb.cursor()
+    sql = 'SELECT StudentID FROM student WHERE StudentID = %s'
+    val=(userID,)
+    mycursor.execute(sql,val)
+    checkUser = mycursor.fetchone()
+    if checkUser is not None:
+        return 1
+    else:
+        return 0    
+def check_instructor(userID):
+    mycursor = mydb.cursor()
+    sql = 'SELECT InstructorID FROM instructor WHERE InstructorID = %s'
+    val=(userID,)
+    mycursor.execute(sql,val)
+    checkUser = mycursor.fetchone()
+    if checkUser is not None:
+        return 1
+    else:
+        return 0
+
+def get_stud_PCID(userID):
+    cur = mydb.cursor(dictionary=True)
+    cur.execute("SELECT * From student, user WHERE (user.UserID=student.StudentID) AND user.UserID = %s", (userID,))
+    userinfo=cur.fetchone()
+    pcid=userinfo["PCID"]
+    return(pcid)
+
+def get_in_PCID(userID):
+    cur = mydb.cursor(dictionary=True)
+    cur.execute("SELECT * From instructor, user WHERE (user.UserID = instructor.InstructorID) AND user.UserID = %s", (userID,))
+    userinfo=cur.fetchone()
+    pcid=userinfo["PCID"]
+    return(pcid)
 
 
 
@@ -124,60 +216,39 @@ def create_tag(ThreadID, tag):
 
 
 def create_post(UserId):
+    
     print("Thread: 1")
     print("Repy: 2")
     print("Discussion Post: 3")
     print("Exit any other input")
-    post_selection = input("Type of post: ")
+    post_selection = int(input("Type of post: "))
+    
     if post_selection == 1:
         post_type = "Thread"
+        #print(post_type)
     elif post_selection == 2:
         post_type = "Reply"
     elif post_selection == 3:
         post_type = "DiscussionPost"
     else:
         return
-
+    
     post_content = input("Content: ")
     folder = input("Folder: ")
     tag = input("Tag: ")
-    PCID=get_user_PCID(userID)
+    PCID=get_pcid(UserId)
     generatedKey = uuid.uuid4()
     postID = generatedKey.bytes
     
     #create post
     mycursor = mydb.cursor()
-    sql = "INSERT INTO POST(PostID, PostContent, PCID, PostType) VALUES (%s, %s,%s, %s)"
+    sql = "INSERT INTO POST(PostID, PostContent, PCID, PostType) VALUES (%s, %s,%s, %s) "
     val = (postID, post_content,PCID, post_type)
     mycursor.execute(sql, val)
     mydb.commit()
 
-    create_thread(postID,0, Null, Null)
+    create_thread(postID,0, None, None)
     create_tag(postID, tag)
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-#create_user("bee", "barry@gmail.com",0)
 
 
 
